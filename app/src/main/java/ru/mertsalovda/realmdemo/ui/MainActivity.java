@@ -9,7 +9,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import ru.mertsalovda.realmdemo.R;
 
@@ -70,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openFragment() {
-        Toast.makeText(this, "OK!", Toast.LENGTH_LONG).show();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, FilmsFragment.newInstance())
+                .commit();
     }
 }

@@ -48,8 +48,6 @@ public class Film extends RealmObject {
     }
 
     public void setYearRelease(int yearRelease) {
-        if (yearRelease < 1895 || yearRelease < 0)
-            yearRelease = 1895;
         this.yearRelease = yearRelease;
     }
 
