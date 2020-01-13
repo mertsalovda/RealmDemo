@@ -7,4 +7,7 @@
     <string name="title_film">Название фильма</string>
     <string name="director">Режиссёр</string>
     <string name="top_films">Количество лучших фильмов</string>
+    <string name="valid_text_3">Текст не должен быть короче трёх символов</string>
+    <string name="enter_year">Введите год</string>
+    <string name="valid_text_4">Текс не должен быть короче четырёх символов</string>
 </resources>

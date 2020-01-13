@@ -4,13 +4,18 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,17 @@ public class FilmsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private FilmsAdapter mFilmsAdapter;
     private FilmRepositoryImpl mRepository;
+
+    private EditText mEtTitle;
+    private EditText mEtStartYear;
+    private EditText mEtEndYear;
+    private EditText mEtDirector;
+    private EditText mEtTopCount;
+
+    private Button mBtnSearchTitle;
+    private Button mBtnSearchInBounds;
+    private Button mBtnSearchDirecrot;
+    private Button mBtnSearchTopBest;
 
     public static FilmsFragment newInstance() {
         return new FilmsFragment();
@@ -39,7 +55,74 @@ public class FilmsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fr_films, container, false);
         mRecyclerView = view.findViewById(R.id.recycler_films);
+
+        mBtnSearchTitle = view.findViewById(R.id.btn_name_search);
+        mBtnSearchInBounds = view.findViewById(R.id.btn_year_search);
+        mBtnSearchDirecrot = view.findViewById(R.id.btn_director_search);
+        mBtnSearchTopBest = view.findViewById(R.id.btn_top_search);
+
+        mEtTitle = view.findViewById(R.id.et_name_search);
+        mEtStartYear = view.findViewById(R.id.et_start_year_search);
+        mEtEndYear = view.findViewById(R.id.et_end_year_search);
+        mEtDirector = view.findViewById(R.id.et_director_search);
+        mEtTopCount = view.findViewById(R.id.et_top_search);
+
+        mBtnSearchTitle.setOnClickListener(v -> {
+            List<Film> films = new ArrayList<>();
+            String query = mEtTitle.getText().toString();
+            if (!isValidQueryTitleSearch(query)) {
+                showMessage(R.string.valid_text_3);
+            } else {
+                films = mRepository.search(query);
+            }
+            mFilmsAdapter.addData(films, true);
+        });
+
+        mBtnSearchInBounds.setOnClickListener(v -> {
+            try {
+                int start = Integer.valueOf(mEtStartYear.getText().toString());
+                int end = Integer.valueOf(mEtEndYear.getText().toString());
+                List<Film> films = mRepository.searchInBounds(start, end);
+                mFilmsAdapter.addData(films, true);
+            } catch (NumberFormatException e) {
+                showMessage(R.string.enter_year);
+            }
+        });
+
+        mBtnSearchDirecrot.setOnClickListener(v -> {
+            List<Film> films = new ArrayList<>();
+            String query = mEtDirector.getText().toString();
+            if (!isValidQueryDirectorSearch(query)) {
+                showMessage(R.string.valid_text_4);
+            } else {
+                films = mRepository.searchByDirector(query);
+            }
+            mFilmsAdapter.addData(films, true);
+        });
+
+        mBtnSearchTopBest.setOnClickListener(v -> {
+            try {
+                int count = Integer.valueOf(mEtTopCount.getText().toString());
+                List<Film> films = mRepository.getTopFilms(count);
+                mFilmsAdapter.addData(films, true);
+            } catch (NumberFormatException e) {
+                showMessage(R.string.enter_year);
+            }
+        });
+
         return view;
+    }
+
+    private void showMessage(@StringRes int message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+    }
+
+    private boolean isValidQueryTitleSearch(String query) {
+        return !TextUtils.isEmpty(query) && query.length() >= 3;
+    }
+
+    private boolean isValidQueryDirectorSearch(String query) {
+        return !TextUtils.isEmpty(query) && query.length() >= 4;
     }
 
     @Override
@@ -48,11 +131,12 @@ public class FilmsFragment extends Fragment {
         mRepository = new FilmRepositoryImpl();
         mRepository.deleteAllFilms();
 
-        mFilmsAdapter = new FilmsAdapter();
+
         List<Film> testData = getTestData();
         mRepository.insertAllFilm(testData);
 
-        mFilmsAdapter.addData(mRepository.searchInBounds(1920, 1950));
+        mFilmsAdapter = new FilmsAdapter();
+        mFilmsAdapter.addData(testData, true);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mFilmsAdapter);

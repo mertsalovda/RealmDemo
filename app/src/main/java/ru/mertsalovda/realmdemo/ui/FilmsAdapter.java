@@ -35,8 +35,11 @@ public class FilmsAdapter extends RecyclerView.Adapter<FilmHolder> {
         return mFilms.size();
     }
 
-    public void addData(List<Film> films){
-        mFilms.clear();
+    public void addData(List<Film> films, boolean clear){
+        if (clear){
+            mFilms.clear();
+        }
         mFilms.addAll(films);
+        notifyDataSetChanged();
     }
 }

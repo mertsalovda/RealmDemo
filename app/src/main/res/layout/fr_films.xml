@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="C"
-            android:inputType="numberDecimal" />
+            android:inputType="date" />
 
         <EditText
             android:id="@+id/et_end_year_search"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="По"
-            android:inputType="numberDecimal" />
+            android:inputType="date" />
 
         <Button
             android:id="@+id/btn_year_search"

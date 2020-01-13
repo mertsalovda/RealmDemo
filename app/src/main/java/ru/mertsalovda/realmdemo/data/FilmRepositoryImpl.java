@@ -87,7 +87,7 @@ public class FilmRepositoryImpl implements FilmRepository {
 
     @Override
     public List<Film> search(String query) {
-        RealmResults<Film> films = mRealm.where(Film.class).like("title", query + "*", Case.INSENSITIVE).findAll();
+        RealmResults<Film> films = mRealm.where(Film.class).like("title", "*" + query + "*", Case.INSENSITIVE).findAll();
         return new ArrayList<>(films);
     }
 
