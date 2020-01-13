@@ -8,13 +8,15 @@ public interface FilmRepository {
 
     List<Film> getAllFilms();
 
-    Film getAllFilm(long id);
+    Film getFilm(long id);
 
-    boolean deleteAllFilms();
+    void deleteAllFilms();
 
-    boolean deleteFilm(long id);
+    boolean deleteFilm(final long id);
 
     long insertFilm(Film film);
+
+    long insertAllFilm(List<Film> film);
 
     void updateFilm(Film film);
 
