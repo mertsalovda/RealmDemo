@@ -28,6 +28,8 @@ public class FilmsPresenterImpl implements FilmsPresenter {
         } else {
             List<Film> films = mRepository.search(query);
             mView.showFilms(films, true);
+            if (films.isEmpty())
+                mView.showError();
         }
     }
 
@@ -39,6 +41,8 @@ public class FilmsPresenterImpl implements FilmsPresenter {
         } else {
             List<Film> films = mRepository.searchByDirector(query);
             mView.showFilms(films,true);
+            if (films.isEmpty())
+                mView.showError();
         }
     }
 
