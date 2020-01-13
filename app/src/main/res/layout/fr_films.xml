@@ -36,19 +36,19 @@
 
         <EditText
             android:id="@+id/et_start_year_search"
-            android:hint="C"
-            android:inputType="numberDecimal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:hint="C"
+            android:inputType="numberDecimal" />
 
         <EditText
             android:id="@+id/et_end_year_search"
-            android:hint="По"
-            android:inputType="numberDecimal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:hint="По"
+            android:inputType="numberDecimal" />
 
         <Button
             android:id="@+id/btn_year_search"
@@ -99,6 +99,12 @@
             android:text="@string/search" />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="#000000" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_films"

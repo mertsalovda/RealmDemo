@@ -19,8 +19,7 @@ public class Film extends RealmObject {
     public Film() {
     }
 
-    public Film(long id, String title, int release, String director, float rating) {
-        this.id = id;
+    public Film(String title, int release, String director, float rating) {
         this.title = title;
         this.yearRelease = release;
         this.director = director;
