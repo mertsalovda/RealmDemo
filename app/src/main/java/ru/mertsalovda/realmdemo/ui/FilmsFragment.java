@@ -26,9 +26,11 @@ import ru.mertsalovda.realmdemo.data.model.Film;
 
 public class FilmsFragment extends Fragment {
 
-    private RecyclerView mRecyclerView;
     private FilmsAdapter mFilmsAdapter;
     private FilmRepositoryImpl mRepository;
+
+    private RecyclerView mRecyclerView;
+    private View mErrorView;
 
     private EditText mEtTitle;
     private EditText mEtStartYear;
@@ -38,7 +40,7 @@ public class FilmsFragment extends Fragment {
 
     private Button mBtnSearchTitle;
     private Button mBtnSearchInBounds;
-    private Button mBtnSearchDirecrot;
+    private Button mBtnSearchDirector;
     private Button mBtnSearchTopBest;
 
     public static FilmsFragment newInstance() {
@@ -55,10 +57,11 @@ public class FilmsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fr_films, container, false);
         mRecyclerView = view.findViewById(R.id.recycler_films);
+        mErrorView = view.findViewById(R.id.v_error);
 
         mBtnSearchTitle = view.findViewById(R.id.btn_name_search);
         mBtnSearchInBounds = view.findViewById(R.id.btn_year_search);
-        mBtnSearchDirecrot = view.findViewById(R.id.btn_director_search);
+        mBtnSearchDirector = view.findViewById(R.id.btn_director_search);
         mBtnSearchTopBest = view.findViewById(R.id.btn_top_search);
 
         mEtTitle = view.findViewById(R.id.et_name_search);
@@ -76,20 +79,23 @@ public class FilmsFragment extends Fragment {
                 films = mRepository.search(query);
             }
             mFilmsAdapter.addData(films, true);
+            isListEmpty(films);
         });
 
         mBtnSearchInBounds.setOnClickListener(v -> {
+            List<Film> films = new ArrayList<>();
             try {
                 int start = Integer.valueOf(mEtStartYear.getText().toString());
                 int end = Integer.valueOf(mEtEndYear.getText().toString());
-                List<Film> films = mRepository.searchInBounds(start, end);
+                films = mRepository.searchInBounds(start, end);
                 mFilmsAdapter.addData(films, true);
             } catch (NumberFormatException e) {
                 showMessage(R.string.enter_year);
             }
+            isListEmpty(films);
         });
 
-        mBtnSearchDirecrot.setOnClickListener(v -> {
+        mBtnSearchDirector.setOnClickListener(v -> {
             List<Film> films = new ArrayList<>();
             String query = mEtDirector.getText().toString();
             if (!isValidQueryDirectorSearch(query)) {
@@ -98,16 +104,19 @@ public class FilmsFragment extends Fragment {
                 films = mRepository.searchByDirector(query);
             }
             mFilmsAdapter.addData(films, true);
+            isListEmpty(films);
         });
 
         mBtnSearchTopBest.setOnClickListener(v -> {
+            List<Film> films = new ArrayList<>();
             try {
                 int count = Integer.valueOf(mEtTopCount.getText().toString());
-                List<Film> films = mRepository.getTopFilms(count);
+                films = mRepository.getTopFilms(count);
                 mFilmsAdapter.addData(films, true);
             } catch (NumberFormatException e) {
                 showMessage(R.string.enter_year);
             }
+            isListEmpty(films);
         });
 
         return view;
@@ -123,6 +132,24 @@ public class FilmsFragment extends Fragment {
 
     private boolean isValidQueryDirectorSearch(String query) {
         return !TextUtils.isEmpty(query) && query.length() >= 4;
+    }
+
+    private void showError(){
+        mRecyclerView.setVisibility(View.GONE);
+        mErrorView.setVisibility(View.VISIBLE);
+    }
+
+    private void showRecycler(){
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mErrorView.setVisibility(View.GONE);
+    }
+
+    private void isListEmpty(List<Film> films){
+        if (films.isEmpty()){
+            showError();
+        } else {
+            showRecycler();
+        }
     }
 
     @Override
