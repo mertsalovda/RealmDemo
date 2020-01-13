@@ -4,6 +4,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -11,16 +13,18 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import ru.mertsalovda.realmdemo.R;
+import ru.mertsalovda.realmdemo.ui.films.FilmsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 123;
+    private static FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mFragmentManager = getSupportFragmentManager();
         checkPermissionAndRun();
     }
 
@@ -69,9 +73,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openFragment() {
-        getSupportFragmentManager()
+        mFragmentManager
                 .beginTransaction()
                 .replace(R.id.container, FilmsFragment.newInstance())
+                .commit();
+    }
+
+    public static void startFragment(Fragment fragment){
+        mFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(fragment.toString())
                 .commit();
     }
 }

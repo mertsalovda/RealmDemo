@@ -1,4 +1,4 @@
-package ru.mertsalovda.realmdemo.ui;
+package ru.mertsalovda.realmdemo.ui.films;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,8 +8,12 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,6 +26,8 @@ import java.util.List;
 import ru.mertsalovda.realmdemo.R;
 import ru.mertsalovda.realmdemo.data.FilmRepositoryImpl;
 import ru.mertsalovda.realmdemo.data.model.Film;
+import ru.mertsalovda.realmdemo.ui.MainActivity;
+import ru.mertsalovda.realmdemo.ui.edit.EditFragment;
 
 public class FilmsFragment extends Fragment implements FilmsView {
 
@@ -51,6 +57,7 @@ public class FilmsFragment extends Fragment implements FilmsView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mRepository = new FilmRepositoryImpl();
         mFilmsPresenter = new FilmsPresenterImpl(this, mRepository);
     }
@@ -89,7 +96,7 @@ public class FilmsFragment extends Fragment implements FilmsView {
         return view;
     }
 
-    private void searchInBounds(){
+    private void searchInBounds() {
         try {
             int start = Integer.valueOf(mEtStartYear.getText().toString());
             int end = Integer.valueOf(mEtEndYear.getText().toString());
@@ -100,7 +107,7 @@ public class FilmsFragment extends Fragment implements FilmsView {
         }
     }
 
-    private void searchTopBest(){
+    private void searchTopBest() {
         try {
             int count = Integer.valueOf(mEtTopCount.getText().toString());
             mFilmsPresenter.searchRating(count);
@@ -116,8 +123,8 @@ public class FilmsFragment extends Fragment implements FilmsView {
     }
 
     @Override
-    public void showFilms(List<Film> films) {
-        mFilmsAdapter.addData(films, true);
+    public void showFilms(List<Film> films, boolean clear) {
+        mFilmsAdapter.addData(films, clear);
         mRecyclerView.setVisibility(View.VISIBLE);
         mErrorView.setVisibility(View.GONE);
     }
@@ -131,7 +138,6 @@ public class FilmsFragment extends Fragment implements FilmsView {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mRepository.deleteAllFilms();
         mFilmsAdapter = new FilmsAdapter();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mFilmsAdapter);
@@ -140,6 +146,34 @@ public class FilmsFragment extends Fragment implements FilmsView {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.add_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_10_films:
+                mFilmsPresenter.addTestData();
+                mFilmsPresenter.getAllFilms();
+                return true;
+            case R.id.menu_add_one_film:
+                MainActivity.startFragment(EditFragment.newInstance(null));
+                return true;
+            case R.id.menu_show_all_films:
+                mFilmsPresenter.getAllFilms();
+                return true;
+            case R.id.menu_delete_all_films:
+                mRepository.deleteAllFilms();
+                mFilmsAdapter.addData(new ArrayList(), true);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

@@ -10,4 +10,8 @@ public interface FilmsPresenter {
 
     void searchInBounds(int start, int end);
 
+    void getAllFilms();
+
+    void addTestData();
+
 }

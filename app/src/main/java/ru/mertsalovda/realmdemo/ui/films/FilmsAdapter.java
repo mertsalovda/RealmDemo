@@ -1,4 +1,4 @@
-package ru.mertsalovda.realmdemo.ui;
+package ru.mertsalovda.realmdemo.ui.films;
 
 import android.view.LayoutInflater;
 import android.view.View;

@@ -1,4 +1,4 @@
-package ru.mertsalovda.realmdemo.ui;
+package ru.mertsalovda.realmdemo.ui.films;
 
 import androidx.annotation.StringRes;
 
@@ -8,7 +8,7 @@ import ru.mertsalovda.realmdemo.data.model.Film;
 
 public interface FilmsView {
 
-    void showFilms(List<Film> films);
+    void showFilms(List<Film> films, boolean clear);
 
     void showError();
 

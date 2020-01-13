@@ -1,4 +1,4 @@
-package ru.mertsalovda.realmdemo.ui;
+package ru.mertsalovda.realmdemo.ui.films;
 
 import android.text.TextUtils;
 
@@ -18,13 +18,6 @@ public class FilmsPresenterImpl implements FilmsPresenter {
     public FilmsPresenterImpl(FilmsView view, FilmRepositoryImpl repository) {
         mRepository = repository;
         mView = view;
-        fillTestData();
-    }
-
-    private void fillTestData() {
-        List<Film> testData = getTestData();
-        mRepository.insertAllFilm(testData);
-        mView.showFilms(mRepository.getAllFilms());
     }
 
     @Override
@@ -34,7 +27,7 @@ public class FilmsPresenterImpl implements FilmsPresenter {
             mView.showError();
         } else {
             List<Film> films = mRepository.search(query);
-            mView.showFilms(films);
+            mView.showFilms(films, true);
         }
     }
 
@@ -45,7 +38,7 @@ public class FilmsPresenterImpl implements FilmsPresenter {
             mView.showError();
         } else {
             List<Film> films = mRepository.searchByDirector(query);
-            mView.showFilms(films);
+            mView.showFilms(films,true);
         }
     }
 
@@ -53,14 +46,25 @@ public class FilmsPresenterImpl implements FilmsPresenter {
     public void searchRating(int count) {
         List<Film> films = mRepository.getTopFilms(count);
         if (films.isEmpty()) mView.showError();
-        else mView.showFilms(films);
+        else mView.showFilms(films, true);
     }
 
     @Override
     public void searchInBounds(int start, int end) {
         List<Film> films = mRepository.searchInBounds(start, end);
         if (films.isEmpty()) mView.showError();
-        else mView.showFilms(films);
+        else mView.showFilms(films, true);
+    }
+
+    @Override
+    public void getAllFilms() {
+        mView.showFilms(mRepository.getAllFilms(), true);
+    }
+
+    @Override
+    public void addTestData() {
+        List<Film> testData = getTestData();
+        mRepository.insertAllFilm(testData);
     }
 
     private boolean isValidQueryTitleSearch(String query) {
