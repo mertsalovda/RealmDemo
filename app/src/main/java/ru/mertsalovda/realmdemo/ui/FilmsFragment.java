@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +23,12 @@ import ru.mertsalovda.realmdemo.R;
 import ru.mertsalovda.realmdemo.data.FilmRepositoryImpl;
 import ru.mertsalovda.realmdemo.data.model.Film;
 
-public class FilmsFragment extends Fragment {
+public class FilmsFragment extends Fragment implements FilmsView {
 
     private FilmsAdapter mFilmsAdapter;
     private FilmRepositoryImpl mRepository;
+
+    private FilmsPresenterImpl mFilmsPresenter;
 
     private RecyclerView mRecyclerView;
     private View mErrorView;
@@ -50,6 +51,8 @@ public class FilmsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRepository = new FilmRepositoryImpl();
+        mFilmsPresenter = new FilmsPresenterImpl(this, mRepository);
     }
 
     @Override
@@ -71,117 +74,67 @@ public class FilmsFragment extends Fragment {
         mEtTopCount = view.findViewById(R.id.et_top_search);
 
         mBtnSearchTitle.setOnClickListener(v -> {
-            List<Film> films = new ArrayList<>();
             String query = mEtTitle.getText().toString();
-            if (!isValidQueryTitleSearch(query)) {
-                showMessage(R.string.valid_text_3);
-            } else {
-                films = mRepository.search(query);
-            }
-            mFilmsAdapter.addData(films, true);
-            isListEmpty(films);
-        });
-
-        mBtnSearchInBounds.setOnClickListener(v -> {
-            List<Film> films = new ArrayList<>();
-            try {
-                int start = Integer.valueOf(mEtStartYear.getText().toString());
-                int end = Integer.valueOf(mEtEndYear.getText().toString());
-                films = mRepository.searchInBounds(start, end);
-                mFilmsAdapter.addData(films, true);
-            } catch (NumberFormatException e) {
-                showMessage(R.string.enter_year);
-            }
-            isListEmpty(films);
+            mFilmsPresenter.searchForTitle(query);
         });
 
         mBtnSearchDirector.setOnClickListener(v -> {
-            List<Film> films = new ArrayList<>();
             String query = mEtDirector.getText().toString();
-            if (!isValidQueryDirectorSearch(query)) {
-                showMessage(R.string.valid_text_4);
-            } else {
-                films = mRepository.searchByDirector(query);
-            }
-            mFilmsAdapter.addData(films, true);
-            isListEmpty(films);
+            mFilmsPresenter.searchForDirector(query);
         });
 
-        mBtnSearchTopBest.setOnClickListener(v -> {
-            List<Film> films = new ArrayList<>();
-            try {
-                int count = Integer.valueOf(mEtTopCount.getText().toString());
-                films = mRepository.getTopFilms(count);
-                mFilmsAdapter.addData(films, true);
-            } catch (NumberFormatException e) {
-                showMessage(R.string.enter_year);
-            }
-            isListEmpty(films);
-        });
+        mBtnSearchInBounds.setOnClickListener(v -> searchInBounds());
+        mBtnSearchTopBest.setOnClickListener(v -> searchTopBest());
 
         return view;
     }
 
-    private void showMessage(@StringRes int message) {
+    private void searchInBounds(){
+        try {
+            int start = Integer.valueOf(mEtStartYear.getText().toString());
+            int end = Integer.valueOf(mEtEndYear.getText().toString());
+            mFilmsPresenter.searchInBounds(start, end);
+        } catch (NumberFormatException e) {
+            showMessage(R.string.enter_year);
+            showError();
+        }
+    }
+
+    private void searchTopBest(){
+        try {
+            int count = Integer.valueOf(mEtTopCount.getText().toString());
+            mFilmsPresenter.searchRating(count);
+        } catch (NumberFormatException e) {
+            showMessage(R.string.enter_year);
+            showError();
+        }
+    }
+
+    @Override
+    public void showMessage(@StringRes int message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
-    private boolean isValidQueryTitleSearch(String query) {
-        return !TextUtils.isEmpty(query) && query.length() >= 3;
-    }
-
-    private boolean isValidQueryDirectorSearch(String query) {
-        return !TextUtils.isEmpty(query) && query.length() >= 4;
-    }
-
-    private void showError(){
-        mRecyclerView.setVisibility(View.GONE);
-        mErrorView.setVisibility(View.VISIBLE);
-    }
-
-    private void showRecycler(){
+    @Override
+    public void showFilms(List<Film> films) {
+        mFilmsAdapter.addData(films, true);
         mRecyclerView.setVisibility(View.VISIBLE);
         mErrorView.setVisibility(View.GONE);
     }
 
-    private void isListEmpty(List<Film> films){
-        if (films.isEmpty()){
-            showError();
-        } else {
-            showRecycler();
-        }
+    @Override
+    public void showError() {
+        mRecyclerView.setVisibility(View.GONE);
+        mErrorView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mRepository = new FilmRepositoryImpl();
         mRepository.deleteAllFilms();
-
-
-        List<Film> testData = getTestData();
-        mRepository.insertAllFilm(testData);
-
         mFilmsAdapter = new FilmsAdapter();
-        mFilmsAdapter.addData(testData, true);
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mFilmsAdapter);
-    }
-
-    private List<Film> getTestData() {
-        List<Film> result = new ArrayList<>();
-        result.add(new Film("Title 0", 1900, "Director 0", 5.5F));
-        result.add(new Film("Title 1", 1910, "Director 1", 7.5F));
-        result.add(new Film("Title 2", 1920, "Director 2", 5.7F));
-        result.add(new Film("Title 3", 1930, "Director 3", 9.5F));
-        result.add(new Film("mTitle 4", 1940, "Director 4", 0.5F));
-        result.add(new Film("mTitle 5", 1950, "Director 5", 1.5F));
-        result.add(new Film("mTitle 6", 1960, "Director 6", 2.5F));
-        result.add(new Film("mTitle 7", 1970, "Director 7", 5.1F));
-        result.add(new Film("mTitle 8", 1980, "Director 8", 7.5F));
-        result.add(new Film("mTitle 9", 1990, "Director 9", 7.5F));
-        return result;
     }
 
     @Override
