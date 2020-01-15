@@ -8,7 +8,6 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.mertsalovda.realmdemo.R;
@@ -31,8 +29,9 @@ import ru.mertsalovda.realmdemo.ui.edit.EditFragment;
 
 public class FilmsFragment extends Fragment implements FilmsView {
 
-    private FilmsAdapter mFilmsAdapter;
     private FilmRepositoryImpl mRepository;
+
+    private FilmsAdapterRealm mFilmsAdapterRealm;
 
     private FilmsPresenterImpl mFilmsPresenter;
 
@@ -123,8 +122,8 @@ public class FilmsFragment extends Fragment implements FilmsView {
     }
 
     @Override
-    public void showFilms(List<Film> films, boolean clear) {
-        mFilmsAdapter.addData(films, clear);
+    public void showFilms(List<Film> films) {
+        mFilmsAdapterRealm.addData(films);
         mRecyclerView.setVisibility(View.VISIBLE);
         mErrorView.setVisibility(View.GONE);
     }
@@ -138,9 +137,10 @@ public class FilmsFragment extends Fragment implements FilmsView {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mFilmsAdapter = new FilmsAdapter();
+        mFilmsAdapterRealm = new FilmsAdapterRealm(mRepository.getItemList(),
+                true, true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.setAdapter(mFilmsAdapter);
+        mRecyclerView.setAdapter(mFilmsAdapterRealm);
     }
 
     @Override
@@ -169,7 +169,6 @@ public class FilmsFragment extends Fragment implements FilmsView {
                 return true;
             case R.id.menu_delete_all_films:
                 mRepository.deleteAllFilms();
-                mFilmsAdapter.addData(new ArrayList(), true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

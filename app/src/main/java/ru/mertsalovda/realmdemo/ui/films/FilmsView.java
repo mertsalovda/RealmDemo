@@ -8,7 +8,7 @@ import ru.mertsalovda.realmdemo.data.model.Film;
 
 public interface FilmsView {
 
-    void showFilms(List<Film> films, boolean clear);
+    void showFilms(List<Film> films);
 
     void showError();
 

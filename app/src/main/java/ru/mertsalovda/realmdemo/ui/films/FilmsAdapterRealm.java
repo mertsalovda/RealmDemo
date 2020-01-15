@@ -5,17 +5,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmRecyclerViewAdapter;
 import ru.mertsalovda.realmdemo.R;
 import ru.mertsalovda.realmdemo.data.model.Film;
 
-public class FilmsAdapter extends RecyclerView.Adapter<FilmHolder> {
+public class FilmsAdapterRealm extends RealmRecyclerViewAdapter<Film, FilmHolder> {
 
-    private List<Film> mFilms = new ArrayList<>();
+
+    public FilmsAdapterRealm(@Nullable OrderedRealmCollection<Film> data, boolean autoUpdate, boolean updateOnModification) {
+        super(data, autoUpdate, updateOnModification);
+    }
 
     @NonNull
     @Override
@@ -27,19 +31,15 @@ public class FilmsAdapter extends RecyclerView.Adapter<FilmHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FilmHolder holder, int position) {
-        holder.bind(mFilms.get(position));
+        holder.bind(getData().get(position));
+    }
+
+    public void addData(List<Film> films){
+        updateData((OrderedRealmCollection<Film>)films);
     }
 
     @Override
-    public int getItemCount() {
-        return mFilms.size();
-    }
-
-    public void addData(List<Film> films, boolean clear){
-        if (clear){
-            mFilms.clear();
-        }
-        mFilms.addAll(films);
-        notifyDataSetChanged();
+    public void updateData(@Nullable OrderedRealmCollection<Film> data) {
+        super.updateData(data);
     }
 }

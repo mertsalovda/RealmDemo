@@ -27,7 +27,7 @@ public class FilmsPresenterImpl implements FilmsPresenter {
             mView.showError();
         } else {
             List<Film> films = mRepository.search(query);
-            mView.showFilms(films, true);
+            mView.showFilms(films);
             if (films.isEmpty())
                 mView.showError();
         }
@@ -40,7 +40,7 @@ public class FilmsPresenterImpl implements FilmsPresenter {
             mView.showError();
         } else {
             List<Film> films = mRepository.searchByDirector(query);
-            mView.showFilms(films,true);
+            mView.showFilms(films);
             if (films.isEmpty())
                 mView.showError();
         }
@@ -50,19 +50,19 @@ public class FilmsPresenterImpl implements FilmsPresenter {
     public void searchRating(int count) {
         List<Film> films = mRepository.getTopFilms(count);
         if (films.isEmpty()) mView.showError();
-        else mView.showFilms(films, true);
+        else mView.showFilms(films);
     }
 
     @Override
     public void searchInBounds(int start, int end) {
         List<Film> films = mRepository.searchInBounds(start, end);
         if (films.isEmpty()) mView.showError();
-        else mView.showFilms(films, true);
+        else mView.showFilms(films);
     }
 
     @Override
     public void getAllFilms() {
-        mView.showFilms(mRepository.getAllFilms(), true);
+        mView.showFilms(mRepository.getAllFilms());
     }
 
     @Override

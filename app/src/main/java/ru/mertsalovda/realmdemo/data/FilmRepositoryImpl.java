@@ -1,11 +1,11 @@
 package ru.mertsalovda.realmdemo.data;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.realm.Case;
 import io.realm.ImportFlag;
+import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -86,25 +86,31 @@ public class FilmRepositoryImpl implements FilmRepository {
     }
 
     @Override
-    public List<Film> search(String query) {
+    public RealmResults<Film> search(String query) {
         RealmResults<Film> films = mRealm.where(Film.class).like("title", "*" + query + "*", Case.INSENSITIVE).findAll();
-        return new ArrayList<>(films);
+        return films;
     }
 
+
     @Override
-    public List<Film> searchInBounds(int startYear, int endYear) {
+    public RealmResults<Film> searchInBounds(int startYear, int endYear) {
         RealmResults<Film> films = mRealm.where(Film.class).between("yearRelease", startYear, endYear).findAll();
-        return new ArrayList<>(films);
+        return films;
     }
 
     @Override
-    public List<Film> searchByDirector(String name) {
+    public RealmResults<Film> searchByDirector(String name) {
         RealmResults<Film> films = mRealm.where(Film.class).like("director", name + "*", Case.INSENSITIVE).findAll();
-        return new ArrayList<>(films);
+        return films;
     }
 
     @Override
-    public List<Film> getTopFilms(int count) {
+    public RealmResults<Film> getTopFilms(int count) {
         return mRealm.where(Film.class).sort("rating", Sort.DESCENDING).limit(count).findAll();
+    }
+
+    public OrderedRealmCollection<Film> getItemList(){
+         return mRealm.where(Film.class).findAll();
+
     }
 }
